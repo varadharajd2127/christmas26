@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Class Secret Santa</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css"></head>
+<body><main>
+<header><div aria-hidden="true"><i class="orn fa-solid fa-star" style="color:var(--gold)"></i><i class="orn fa-solid fa-bell"></i><i class="orn fa-solid fa-candy-cane"></i><i class="orn fa-solid fa-holly-berry"></i></div>
+<h1><i class="fa-solid fa-tree"></i> Class Secret Santa</h1><p class="tag">Find your name, keep the secret, spread the cheer.</p></header>
+<div class="cds"><div class="cd" id="c1"></div><div class="cd" id="c2"></div></div>
+<div id="app"><div class="card">Loading the North Pole… <i class="fa-solid fa-snowflake fa-spin"></i></div></div>
+<p class="note" style="text-align:center;color:#bcd0e6"><a href="admin.html">Admin</a></p>
+</main>
+<script src="app.js"></script>
+<script>
+let pub={},mode='reg',pick=null,tk=S.get('tk'),timer;
+const app=$('#app');
+function cds(){countdown($('#c1'),pub.allotAt,'Your giftee is revealed',()=>tk&&dash());countdown($('#c2'),pub.giftDate,'Gift exchange day')}
+async function init(){try{pub=await api('pub');cds()}catch(e){toast(e.message,1)}
+ if(tk){try{const m=await api('me',{token:tk});return dash(m)}catch(e){S.del('tk');tk=null}}auth()}
+function auth(){
+ pick=null;
+ let note='';if(!pub.open){note=`<div class="card"><h2><i class="fa-solid fa-lock"></i> Names drawn</h2><p>Registration is closed. Already registered? Sign in below.</p></div>`;mode='log'}
+ app.innerHTML=note+`<div class="card"><div class="tabs">${pub.open?`<button class="${mode==='reg'?'g':'o'}" data-m="reg"><i class="fa-solid fa-gift"></i> Register</button>`:''}<button class="${mode==='log'?'g':'o'}" data-m="log"><i class="fa-solid fa-key"></i> Sign in</button></div>
+ <h2>${mode==='reg'?'Who are you?':'Welcome back!'}</h2><label for="nm">Type your name (spelling needn’t be exact)</label><input id="nm" maxlength="40" autocomplete="off"><div id="sug" aria-live="polite"></div><div id="form"></div></div>`;
+ $('#nm').addEventListener('input',e=>{clearTimeout(timer);timer=setTimeout(()=>search(e.target.value),350)})}
+async function search(q){const el=$('#sug');if(!el)return;if(q.trim().length<2){el.innerHTML='';return}
+ try{const{list}=await api('search',{q});el.innerHTML=list.length?list.map(x=>{const ok=mode==='reg'?!x.taken:x.taken;
+ return `<button class="sug" data-n="${esc(x.name)}" ${ok?'':'disabled'}><span>${esc(x.name)}</span><span class="${ok?'ok':'bad'}"><i class="fa-solid ${ok?'fa-circle-check':'fa-ban'}"></i> ${mode==='reg'?(x.taken?'already registered':'available'):(x.taken?'registered':'not registered yet')}</span></button>`}).join(''):'<p class="bad"><i class="fa-solid fa-magnifying-glass"></i> No similar name on the class list. Check the spelling or ask your admin.</p>'}catch(e){el.innerHTML=`<p class="bad">${esc(e.message)}</p>`}}
+function chosen(n){pick=n;$('#sug').innerHTML=`<p class="ok"><i class="fa-solid fa-circle-check"></i> ${esc(n)}</p>`;$('#nm').value=n;
+ $('#form').innerHTML=mode==='reg'?`<label for="p1">Create a PIN (4 to 8 digits)</label><input id="p1" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password"><label for="p2">Repeat PIN</label><input id="p2" type="password" inputmode="numeric" maxlength="8" autocomplete="new-password"><label for="jw">Wishlist (hints for your Santa)</label><textarea id="jw" rows="3" maxlength="300" placeholder="Books, snacks, a cozy scarf…"></textarea><button data-go="reg"><i class="fa-solid fa-gift"></i> Join Secret Santa</button><p class="note">Remember your PIN. You need it to sign in again.</p>`
+ :`<label for="p1">Your PIN</label><input id="p1" type="password" inputmode="numeric" maxlength="8" autocomplete="current-password"><button data-go="log"><i class="fa-solid fa-right-to-bracket"></i> Sign in</button>`}
+async function go(t){try{t.disabled=true;let r;
+ if(mode==='reg'){if($('#p1').value!==$('#p2').value)throw new Error('The two PINs do not match.');r=await api('register',{name:pick,pin:$('#p1').value,wish:$('#jw').value})}
+ else r=await api('login',{name:pick,pin:$('#p1').value});
+ tk=r.token;S.set('tk',tk);dash(await api('me',{token:tk}));confetti()}catch(e){toast(e.message,1);t.disabled=false}}
+function unlocked(){return pub.allotAt&&new Date(pub.allotAt)<=new Date()}
+function dash(m){if(m)dash.m=m;m=dash.m;if(!m)return;const un=unlocked();
+ app.innerHTML=`<div class="card"><h2><i class="fa-solid fa-user-secret"></i> Ho ho ho, ${esc(m.name)}!</h2>
+ <div class="steps"><div class="on"><i class="fa-solid fa-pen"></i>Registered</div><div class="${un?'on':''}"><i class="fa-solid fa-dice"></i>Names revealed</div><div><i class="fa-solid fa-gifts"></i>Gift day</div></div>
+ <label for="jw">Your wishlist</label><textarea id="jw" rows="3" maxlength="300">${esc(m.wish)}</textarea><button class="g" data-save><i class="fa-solid fa-floppy-disk"></i> Save wishlist</button> <button class="o" data-out><i class="fa-solid fa-right-from-bracket"></i> Sign out</button>
+ ${pub.budget?`<p class="note"><i class="fa-solid fa-coins"></i> Budget: ${esc(pub.budget)}</p>`:''}</div>
+ <div class="card"><h2><i class="fa-solid fa-wand-magic-sparkles"></i> Your magic box</h2><div class="stage" id="stage">${un?`<button class="box" data-open aria-label="Open your magic box"><i class="fa-solid fa-gift"></i></button><p class="note">Tap the box. Make sure nobody is peeking!</p>`
+ :`<i class="fa-solid fa-lock" style="font-size:3rem;color:var(--muted)"></i><p>Your secret giftee is locked until ${pub.allotAt?esc(new Date(pub.allotAt).toLocaleString([], {dateStyle:'medium',timeStyle:'short'})):'the admin sets the date'}.</p>`}</div></div>`}
+async function open_(b){b.classList.add('shake');let r,err;const p=api('reveal',{token:tk}).then(x=>r=x).catch(e=>err=e);
+ await Promise.all([p,new Promise(z=>setTimeout(z,1800))]);
+ if(err){b.classList.remove('shake');return toast(err.message,1)}
+ b.classList.replace('shake','boom');const st=$('#stage');st.insertAdjacentHTML('beforeend','<span class="burst"></span>');confetti();
+ setTimeout(()=>{st.innerHTML=`<p class="note"><i class="fa-solid fa-star"></i> You are the Secret Santa for</p><div class="giftee">${esc(r.giftee)}</div><p style="font-style:italic"><i class="fa-solid fa-heart"></i> ${r.wish?esc(r.wish):'No wishlist yet. Get creative!'}</p><button class="o" data-hide>Hide</button>`},700)}
+document.addEventListener('click',async e=>{const t=e.target.closest('button');if(!t)return;
+ if(t.dataset.m){mode=t.dataset.m;auth()}else if(t.dataset.n)chosen(t.dataset.n);else if('go' in t.dataset)go(t);
+ else if('out' in t.dataset){S.del('tk');tk=null;dash.m=null;auth()}
+ else if('save' in t.dataset){try{await api('save',{token:tk,wish:$('#jw').value});dash.m.wish=$('#jw').value;toast('Wishlist saved!')}catch(x){toast(x.message,1)}}
+ else if('open' in t.dataset)open_(t);else if('hide' in t.dataset)dash()});
+init();
+</script></body></html>

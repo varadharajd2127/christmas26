@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>Secret Santa Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="style.css"></head>
+<body><main>
+<header><h1><i class="fa-solid fa-user-tie"></i> Santa’s Workshop</h1><p class="tag">Admin page</p></header>
+<div id="app"></div>
+<p class="note" style="text-align:center"><a href="index.html">Back to the class page</a></p>
+</main>
+<script src="app.js"></script>
+<script>
+let tk=sessionStorage.getItem('atk'),st;const app=$('#app');
+const loc=iso=>{if(!iso)return'';const d=new Date(iso),p=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`};
+const iso=v=>v?new Date(v).toISOString():'';
+function login(){app.innerHTML=`<div class="card"><h2><i class="fa-solid fa-key"></i> Admin passcode</h2><input id="ps" type="password" autocomplete="current-password"><button data-a="login"><i class="fa-solid fa-right-to-bracket"></i> Enter</button></div>`}
+async function load(){try{st=await api('adminState',{token:tk});show()}catch(e){sessionStorage.removeItem('atk');tk=null;login()}}
+function show(){const c=st.cfg,n=st.roster.filter(x=>x.reg).length;
+ app.innerHTML=`<div class="card"><h2><i class="fa-solid fa-clipboard-list"></i> Class list</h2><label for="rl">One name per line</label><textarea id="rl" rows="7" ${c.drawn?'disabled':''}>${esc(st.roster.map(x=>x.name).join('\n'))}</textarea><button class="g" data-a="roster" ${c.drawn?'disabled':''}><i class="fa-solid fa-floppy-disk"></i> Save class list</button></div>
+ <div class="card"><h2><i class="fa-solid fa-calendar-days"></i> Dates &amp; budget</h2><label for="al">Reveal date: names are drawn and shown to everyone then</label><input id="al" type="datetime-local" value="${loc(c.allotAt)}"><label for="gd">Gift exchange date (shown as a countdown)</label><input id="gd" type="datetime-local" value="${loc(c.giftDate)}"><label for="bd">Budget (optional)</label><input id="bd" maxlength="60" value="${esc(c.budget)}" placeholder="e.g. ₹300–500"><button class="g" data-a="cfg"><i class="fa-solid fa-floppy-disk"></i> Save</button></div>
+ <div class="card"><h2><i class="fa-solid fa-users"></i> Registered (${n}/${st.roster.length})</h2>${st.roster.map(x=>`<div class="row"><span>${esc(x.name)}</span><span>${x.reg?`<span class="ok"><i class="fa-solid fa-circle-check"></i> in</span> ${c.drawn?'':`<button class="o" data-a="rm" data-n="${esc(x.name)}"><i class="fa-solid fa-trash"></i></button>`}`:'<span class="note"><i class="fa-solid fa-hourglass-half"></i> waiting</span>'}</span></div>`).join('')||'<p class="note">Add the class list first.</p>'}</div>
+ <div class="card"><h2><i class="fa-solid fa-dice"></i> The draw</h2>${c.drawn?`<p class="ok"><i class="fa-solid fa-circle-check"></i> Names drawn at random. Matches stay hidden until the reveal date.</p><button class="o" data-a="reset"><i class="fa-solid fa-rotate-left"></i> Reset the draw</button>`:`<p>The draw runs automatically at the reveal date for everyone registered (minimum 3). Registration closes once it runs.</p><button data-a="draw" ${n<3?'disabled':''}><i class="fa-solid fa-dice"></i> Draw now</button>`}</div>`}
+document.addEventListener('click',async e=>{const t=e.target.closest('[data-a]');if(!t)return;const a=t.dataset.a;
+ try{if(a==='login'){const r=await api('adminLogin',{pass:$('#ps').value});tk=r.token;sessionStorage.setItem('atk',tk);return load()}
+ if(a==='roster')await api('setRoster',{token:tk,text:$('#rl').value});
+ else if(a==='cfg')await api('setConfig',{token:tk,allotAt:iso($('#al').value),giftDate:iso($('#gd').value),budget:$('#bd').value});
+ else if(a==='rm'){if(!confirm('Remove '+t.dataset.n+'? They can register again.'))return;await api('removePlayer',{token:tk,name:t.dataset.n})}
+ else if(a==='draw'){if(!confirm('Draw now? Registration will close.'))return;await api('drawNow',{token:tk})}
+ else if(a==='reset'){if(!confirm('Reset the draw? Players keep their registration.'))return;await api('resetDraw',{token:tk})}
+ toast('Done!');load()}catch(x){toast(x.message,1)}});
+tk?load():login();
+</script></body></html>

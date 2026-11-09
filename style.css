@@ -1,0 +1,59 @@
+:root{--night:#0a1a2f;--pine:#0b3d2e;--cran:#b3202f;--gold:#f5c542;--snow:#fffaf0;--ink:#2a1a14;--muted:#7b6458}
+*{box-sizing:border-box}
+html{padding-top:env(safe-area-inset-top,0)}
+body{margin:0;min-height:100vh;color:var(--snow);font-family:'Nunito',system-ui,sans-serif;line-height:1.5;
+background:radial-gradient(ellipse at 50% 0,#17406a 0,var(--night) 55%,#06101d 100%) fixed;padding-bottom:env(safe-area-inset-bottom,0)}
+body:after{content:"";position:fixed;left:0;right:0;bottom:0;height:90px;background:linear-gradient(transparent,#e9f2ff33);pointer-events:none;z-index:0}
+#snow{position:fixed;inset:0;pointer-events:none;z-index:0}
+.lights{position:relative;z-index:2;display:flex;justify-content:space-around;padding:0 4px;height:30px;border-top:3px solid #1d3a2c}
+.lights i{width:11px;height:16px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;margin-top:3px;animation:glow 1.5s infinite alternate}
+.lights i:nth-child(4n+1){background:#ff4d4d;box-shadow:0 0 12px #ff4d4d}.lights i:nth-child(4n+2){background:var(--gold);box-shadow:0 0 12px var(--gold);animation-delay:.35s}
+.lights i:nth-child(4n+3){background:#4ee08c;box-shadow:0 0 12px #4ee08c;animation-delay:.7s}.lights i:nth-child(4n){background:#6ab7ff;box-shadow:0 0 12px #6ab7ff;animation-delay:1s}
+@keyframes glow{from{opacity:.3;transform:scale(.8)}to{opacity:1;transform:scale(1.1)}}
+.sleigh{position:fixed;top:44px;left:-120px;font-size:2rem;color:var(--gold);z-index:1;animation:fly 22s linear infinite;filter:drop-shadow(0 0 8px #f5c54288)}
+@keyframes fly{0%{transform:translate(0,0)}50%{transform:translate(55vw,-12px) rotate(-6deg)}100%{transform:translate(115vw,10px)}}
+main{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:10px 16px 60px}
+header{text-align:center;padding:14px 0 4px}
+h1{font-family:'Mountains of Christmas',cursive;font-size:2.6rem;margin:0;color:var(--gold);text-shadow:0 0 18px #f5c54255,2px 2px 0 var(--cran)}
+.orn{display:inline-block;transform-origin:top center;animation:swing 3s ease-in-out infinite;margin:0 6px}.orn:nth-child(even){animation-delay:.8s;color:#ff6b6b}
+@keyframes swing{50%{transform:rotate(14deg)}0%,100%{transform:rotate(-14deg)}}
+.tag{margin:.2em 0 0;color:#bcd0e6}
+.cds{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+.cd{flex:1 1 220px;text-align:center;padding:10px;border-radius:14px;background:#ffffff14;border:1px solid #ffffff26}
+.cd small{display:block;color:#bcd0e6}.cd .t{display:flex;justify-content:center;gap:6px}
+.cd .t b{min-width:48px;padding:4px;border-radius:8px;background:var(--cran);font-size:1.25rem;box-shadow:inset 0 -3px #0003}
+.cd .t em{display:block;font-style:normal;font-size:.6rem;font-weight:400}
+.card{position:relative;background:var(--snow);color:var(--ink);border-radius:16px;padding:20px 18px 16px;margin:16px 0;box-shadow:0 10px 30px #0006;overflow:hidden}
+.card:before{content:"";position:absolute;left:0;right:0;top:0;height:7px;background:repeating-linear-gradient(-45deg,var(--cran) 0 10px,#fff 10px 20px)}
+h2{font-family:'Mountains of Christmas',cursive;font-size:1.6rem;margin:.2em 0 .4em;color:var(--pine)}
+label{display:block;font-weight:700;font-size:.9rem;margin:.9em 0 .25em}
+input,textarea{width:100%;padding:11px 12px;border:2px solid #e3d2bd;border-radius:10px;font:inherit;background:#fff;color:var(--ink)}
+input:focus,textarea:focus,button:focus-visible{outline:3px solid var(--gold);outline-offset:1px}
+button{font:inherit;font-weight:700;cursor:pointer;border:0;border-radius:999px;padding:11px 20px;margin-top:12px;background:var(--cran);color:#fff;transition:transform .15s}
+button:hover:not(:disabled){transform:translateY(-2px) scale(1.03)}button:disabled{opacity:.5;cursor:not-allowed}
+button.g{background:var(--pine)}button.o{background:transparent;color:var(--pine);border:2px solid var(--pine)}
+.tabs{display:flex;gap:8px;justify-content:center}.tabs button{margin:0}
+.sug{display:flex;justify-content:space-between;gap:8px;width:100%;margin:8px 0 0;background:#fff;color:var(--ink);border:2px solid #e3d2bd;text-align:left;border-radius:12px}
+.ok{color:#1b7a43}.bad{color:var(--cran)}.note{font-size:.85rem;color:var(--muted)}
+.steps{display:flex;justify-content:space-between;text-align:center;font-size:.8rem;color:var(--muted);margin:6px 0}
+.steps div{flex:1}.steps i{display:grid;place-items:center;width:38px;height:38px;margin:0 auto 4px;border-radius:50%;background:#eadfce}
+.steps .on i{background:var(--pine);color:var(--gold);animation:pulse 2s infinite}.steps .on{color:var(--pine);font-weight:700}
+@keyframes pulse{50%{box-shadow:0 0 0 8px #0b3d2e22}}
+.stage{text-align:center;padding:14px 0;position:relative;min-height:190px}
+.box{font-size:5.5rem;color:var(--cran);cursor:pointer;display:inline-block;animation:bob 2s ease-in-out infinite;filter:drop-shadow(0 6px 0 #0002);background:none;padding:0;margin:0}
+@keyframes bob{50%{transform:translateY(-10px) rotate(5deg)}}
+.box.shake{animation:shake .22s 8}.box.boom{animation:boom .6s forwards}
+@keyframes shake{25%{transform:rotate(-14deg) scale(1.1)}75%{transform:rotate(14deg) scale(1.1)}}
+@keyframes boom{to{transform:scale(3) rotate(30deg);opacity:0}}
+.burst{position:absolute;left:50%;top:80px;width:20px;height:20px;margin:-10px;border-radius:50%;background:radial-gradient(#fff,var(--gold) 40%,transparent 70%);animation:burst 1s forwards}
+@keyframes burst{to{transform:scale(18);opacity:0}}
+.giftee{font-family:'Mountains of Christmas',cursive;font-size:2.8rem;color:var(--cran);margin:.1em 0;animation:zoom 1s cubic-bezier(.2,1.6,.4,1) both;text-shadow:0 0 14px #f5c54299}
+@keyframes zoom{from{opacity:0;transform:scale(.2) rotate(-8deg)}}
+.cf{position:fixed;top:-20px;z-index:9;width:10px;height:14px;animation:fall linear forwards;pointer-events:none}
+@keyframes fall{to{transform:translate(var(--dx),110vh) rotate(720deg)}}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 0;border-bottom:1px dotted #d9c6ae}
+.row button{margin:0;padding:4px 12px;font-size:.8rem}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:20;padding:12px 18px;border-radius:12px;background:var(--pine);color:#fff;box-shadow:0 6px 20px #0008;max-width:90vw}
+.toast.bad{background:var(--cran)}
+a{color:var(--gold)}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important}.sleigh{display:none}}
