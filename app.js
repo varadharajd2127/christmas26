@@ -1,5 +1,5 @@
 /* >>> Paste your Apps Script Web App URL here (ends with /exec) <<< */
-const API = 'PASTE_YOUR_APPS_SCRIPT_URL_HERE';
+const API = 'https://script.google.com/macros/s/AKfycbxXzJu9oFy0HSRlDPFF__nwaCtq0j2enhSNmLilRJoXLPMVMqJBlK0xO7pjQ6PHVmfO/exec';
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const S = { get: k => { try { return localStorage.getItem(k) } catch (e) { return null } }, set: (k, v) => { try { localStorage.setItem(k, v) } catch (e) {} }, del: k => { try { localStorage.removeItem(k) } catch (e) {} } };
